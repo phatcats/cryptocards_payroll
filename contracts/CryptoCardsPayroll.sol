@@ -14,13 +14,15 @@ pragma solidity ^0.5.2;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/utils/Address.sol";
+import "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
 //import "openzeppelin-solidity/contracts/payment/PaymentSplitter.sol";
 
 
 /**
  * @title Crypto-Cards Payroll
  */
-contract CryptoCardsPayroll is Ownable {
+contract CryptoCardsPayroll is Ownable, ReentrancyGuard {
     using SafeMath for uint256;
 
     event PayeeAdded(address account, uint256 shares);
@@ -118,7 +120,7 @@ contract CryptoCardsPayroll is Ownable {
     /**
      * @dev Release payee's proportional payment.
      */
-    function release() public {
+    function release() external nonReentrant {
         address payable account = address(uint160(msg.sender));
         require(_shares[account] > 0, "Account not eligible for payroll");
 
@@ -143,6 +145,7 @@ contract CryptoCardsPayroll is Ownable {
      */
     function addNewPayee(address account, uint256 shares_) public onlyOwner {
         require(account != address(0), "Invalid account");
+        require(Address.isContract(account) == false, "Account cannot be a contract");
         require(shares_ > 0, "Shares must be greater than zero");
         require(_shares[account] == 0, "Payee already exists");
         require(_totalReleased == 0, "Must release all existing payments first");
