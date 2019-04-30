@@ -1,0 +1,10 @@
+{
+  "name": "cryptocards_payroll",
+  "currentVersion": "1.0.0",
+  "versionPrefix": "v",
+  "filesList": [
+    "package.json:package",
+    "README.md",
+    "contracts/CryptoCardsPayroll.sol"
+  ]
+}
